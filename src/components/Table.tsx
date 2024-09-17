@@ -2,67 +2,61 @@
 
 import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setData } from '@/redux/store/slice';
+import { addUser, editUser, deleteUser } from '@/redux/store/slice';
 import { FaSearch, FaTrash, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import useDebounce from '@/hooks/useDebounce';
+import { RootState } from '@/redux/store';
+import { User } from '@/app/types';
 
-interface User {
-    id: number;
-    name: string;
-}
-
-interface RootState {
-    data: {
-        users: User[];
-    };
-}
 
 const Table: React.FC = () => {
     const dispatch = useDispatch();
-    const data = useSelector((state: RootState) => state.data.users);
-    const [formData, setFormData] = useState<User>({ id: 0, name: '' });
+    const users = useSelector((state: RootState) => state.data.users);
+    const [userData, setUserData] = useState<User>({ id: 0, name: '' });
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [itemsPerPage] = useState<number>(5);
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [usersPerPage] = useState<number>(5);
+    const [userId, setUserId] = useState<number | null>(null);
+    const debounceSearch = useDebounce(searchTerm);
 
-    const filteredData = useMemo(() => {
-        return data.filter((item) =>
-            item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredUsers = useMemo(() => {
+        return users.filter((user: User) =>
+            user.name.toLowerCase().includes(debounceSearch.toLowerCase())
         );
-    }, [data, searchTerm]);
+    }, [users, debounceSearch]);
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
     const pageNumbers: number[] = [];
-    for (let i = 1; i <= Math.ceil(filteredData.length / itemsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(filteredUsers.length / usersPerPage); i++) {
         pageNumbers.push(i);
     }
 
     const handleAdd = () => {
-        if (formData.name.trim()) {
-            dispatch(setData([...data, { ...formData, id: Date.now() }]));
-            setFormData({ id: 0, name: '' });
+        if (userData.name.trim()) {
+            dispatch(addUser({ ...userData, id: Date.now() }));
+            setUserData({ id: 0, name: '' });
         }
     };
 
     const handleDelete = (id: number) => {
-        dispatch(setData(data.filter((item) => item.id !== id)));
+        dispatch(deleteUser(id));
     };
 
     const handleEdit = (id: number) => {
-        setEditingId(id);
-        const itemToEdit = data.find((item) => item.id === id);
+        setUserId(id);
+        const itemToEdit = users.find((user: User) => user.id === id);
         if (itemToEdit) {
-            setFormData({ ...itemToEdit });
+            setUserData({ ...itemToEdit });
         }
     };
 
     const handleUpdate = () => {
-        dispatch(setData(data.map((item) => item.id === editingId ? formData : item)));
-        setEditingId(null);
-        setFormData({ id: 0, name: '' });
+        dispatch(editUser({ userId, userData }));
+        setUserId(null);
+        setUserData({ id: 0, name: '' });
     };
 
     return (
@@ -71,11 +65,11 @@ const Table: React.FC = () => {
                 <input
                     type="text"
                     placeholder="Enter name"
-                    value={formData.name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
+                    value={userData.name}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserData({ ...userData, name: e.target.value })}
                     className="flex-grow mr-2 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {editingId !== null ? (
+                {userId !== null ? (
                     <button onClick={handleUpdate} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300">
                         Update
                     </button>
@@ -106,15 +100,15 @@ const Table: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {currentItems.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-50">
-                            <td className="py-2 px-4 border-b">{item.id}</td>
-                            <td className="py-2 px-4 border-b">{item.name}</td>
+                    {currentUsers.map((user: User) => (
+                        <tr key={user.id} className="hover:bg-gray-50">
+                            <td className="py-2 px-4 border-b">{user.id}</td>
+                            <td className="py-2 px-4 border-b">{user.name}</td>
                             <td className="py-2 px-4 border-b">
-                                <button onClick={() => handleEdit(item.id)} className="mr-2 text-blue-500 hover:text-blue-700">
+                                <button onClick={() => handleEdit(user.id)} className="mr-2 text-blue-500 hover:text-blue-700">
                                     <FaEdit />
                                 </button>
-                                <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:text-red-700">
+                                <button onClick={() => handleDelete(user.id)} className="text-red-500 hover:text-red-700">
                                     <FaTrash />
                                 </button>
                             </td>
@@ -125,7 +119,7 @@ const Table: React.FC = () => {
 
             <div className="mt-4 flex justify-between items-center">
                 <div>
-                    Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length} entries
+                    Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} entries
                 </div>
                 <div className="flex">
                     <button
@@ -146,7 +140,7 @@ const Table: React.FC = () => {
                     ))}
                     <button
                         onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
+                        disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
                         className="ml-2 px-3 py-1 border rounded disabled:opacity-50"
                     >
                         <FaChevronRight />

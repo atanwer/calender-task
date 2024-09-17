@@ -1,13 +1,10 @@
+import { EventType, ModalProps } from '@/app/types';
 import React, { useState } from 'react';
 
-interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: (type: 'event' | 'reminder', content: string) => void;
-}
+
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
-    const [type, setType] = useState<'event' | 'reminder'>('event');
+    const [type, setType] = useState<EventType>('event');
     const [content, setContent] = useState('');
 
     const handleSave = () => {

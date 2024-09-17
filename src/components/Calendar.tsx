@@ -3,21 +3,14 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addEvent } from '@/redux/store/slice';
-import { FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Modal from './Modal';
-
-interface Event {
-    type: 'event' | 'reminder';
-    content: string;
-}
-
-interface CalendarEvent {
-    [date: string]: Event[];
-}
+import { CalendarEvent, EventType } from '@/app/types';
+import { RootState } from '@/redux/store';
 
 const CustomCalendar: React.FC = () => {
     const dispatch = useDispatch();
-    const events: CalendarEvent = useSelector((state: any) => state.data.events);
+    const events: CalendarEvent = useSelector((state: RootState) => state.data.events);
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -30,7 +23,7 @@ const CustomCalendar: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleSave = (type: 'event' | 'reminder', content: string) => {
+    const handleSave = (type: EventType, content: string) => {
         if (selectedDate) {
             const formattedDate = selectedDate.toISOString().split('T')[0];
             dispatch(addEvent({
@@ -44,13 +37,13 @@ const CustomCalendar: React.FC = () => {
     const renderCalendarDays = () => {
         const days = [];
         const today = new Date();
-
         for (let i = 0; i < firstDayOfMonth; i++) {
             days.push(<div key={`empty-${i}`} className="h-24 border border-gray-200"></div>);
         }
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
             const formattedDate = date.toISOString().split('T')[0];
+
             const dayEvents = events[formattedDate] || [];
 
             const isToday = date.toDateString() === today.toDateString();
@@ -58,7 +51,7 @@ const CustomCalendar: React.FC = () => {
             days.push(
                 <div
                     key={day}
-                    className={`h-24 border border-gray-200 p-1 overflow-y-auto cursor-pointer hover:bg-gray-100 ${isToday ? 'bg-yellow-50' : ''}`}
+                    className={`h-24 border border-gray-200 p-1 overflow-y-auto cursor-pointer hover:bg-gray-100 ${isToday ? 'bg-gray-200' : ''}`}
                     onClick={() => handleDateClick(date)}
                 >
                     <div className="font-bold text-sm mb-1 text-center">{day}</div>

@@ -4,12 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTable, FaCalendarAlt, FaChevronLeft, FaChevronRight, FaBars } from 'react-icons/fa';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-interface NavItem {
-    name: string;
-    path: string;
-    icon: React.ElementType;
-}
+import { NavItem } from '@/app/types';
 
 const navItems: NavItem[] = [
     { name: 'Table', path: '/table', icon: FaTable },
