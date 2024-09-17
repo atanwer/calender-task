@@ -118,34 +118,38 @@ const Table: React.FC = () => {
             </table>
 
             <div className="mt-4 flex justify-between items-center">
-                <div>
-                    Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} entries
-                </div>
-                <div className="flex">
-                    <button
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="mr-2 px-3 py-1 border rounded disabled:opacity-50"
-                    >
-                        <FaChevronLeft />
-                    </button>
-                    {pageNumbers.map((number) => (
-                        <button
-                            key={number}
-                            onClick={() => setCurrentPage(number)}
-                            className={`mx-1 px-3 py-1 border rounded ${currentPage === number ? 'bg-blue-500 text-white' : ''}`}
-                        >
-                            {number}
-                        </button>
-                    ))}
-                    <button
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
-                        className="ml-2 px-3 py-1 border rounded disabled:opacity-50"
-                    >
-                        <FaChevronRight />
-                    </button>
-                </div>
+                {filteredUsers.length > 0 && (
+                    <>
+                        <div>
+                            Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} entries
+                        </div>
+                        <div className="flex">
+                            <button
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="mr-2 px-3 py-1 border rounded disabled:opacity-50"
+                            >
+                                <FaChevronLeft />
+                            </button>
+                            {pageNumbers.map((number) => (
+                                <button
+                                    key={number}
+                                    onClick={() => setCurrentPage(number)}
+                                    className={`mx-1 px-3 py-1 border rounded ${currentPage === number ? 'bg-blue-500 text-white' : ''}`}
+                                >
+                                    {number}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
+                                className="ml-2 px-3 py-1 border rounded disabled:opacity-50"
+                            >
+                                <FaChevronRight />
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
