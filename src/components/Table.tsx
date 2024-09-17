@@ -5,21 +5,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setData } from '@/redux/store/slice';
 import { FaSearch, FaTrash, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-interface DataItem {
+interface User {
     id: number;
     name: string;
 }
 
 interface RootState {
     data: {
-        data: DataItem[];
+        users: User[];
     };
 }
 
 const Table: React.FC = () => {
     const dispatch = useDispatch();
-    const data = useSelector((state: RootState) => state.data.data);
-    const [formData, setFormData] = useState<DataItem>({ id: 0, name: '' });
+    const data = useSelector((state: RootState) => state.data.users);
+    const [formData, setFormData] = useState<User>({ id: 0, name: '' });
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage] = useState<number>(5);

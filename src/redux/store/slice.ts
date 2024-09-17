@@ -1,12 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface User {
+  id: number;
+  name: string;
+}
+
 type DataState = {
-  data: Array<any>;
+  users: Array<User>;
   events: { [key: string]: Array<{ type: string; content: string }> };
 };
 
 const initialState: DataState = {
-  data: [],
+  users: [],
   events: {},
 };
 
@@ -15,7 +20,7 @@ const dataSlice = createSlice({
   initialState,
   reducers: {
     setData: (state, action: PayloadAction<any[]>) => {
-      state.data = action.payload;
+      state.users = action.payload;
     },
     addEvent: (state, action: PayloadAction<{ date: string; event: any }>) => {
       const { date, event } = action.payload;

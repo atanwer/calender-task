@@ -17,8 +17,8 @@ const navItems: NavItem[] = [
 ];
 
 const Sidebar: React.FC = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState<boolean>(false);
     const pathname = usePathname();
 
     useEffect(() => {
