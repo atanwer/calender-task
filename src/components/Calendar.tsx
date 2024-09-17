@@ -43,6 +43,8 @@ const CustomCalendar: React.FC = () => {
 
     const renderCalendarDays = () => {
         const days = [];
+        const today = new Date();
+
         for (let i = 0; i < firstDayOfMonth; i++) {
             days.push(<div key={`empty-${i}`} className="h-24 border border-gray-200"></div>);
         }
@@ -51,13 +53,15 @@ const CustomCalendar: React.FC = () => {
             const formattedDate = date.toISOString().split('T')[0];
             const dayEvents = events[formattedDate] || [];
 
+            const isToday = date.toDateString() === today.toDateString();
+
             days.push(
                 <div
                     key={day}
-                    className="h-24 border border-gray-200 p-1 overflow-y-auto cursor-pointer hover:bg-gray-100"
+                    className={`h-24 border border-gray-200 p-1 overflow-y-auto cursor-pointer hover:bg-gray-100 ${isToday ? 'bg-yellow-50' : ''}`}
                     onClick={() => handleDateClick(date)}
                 >
-                    <div className="font-bold text-sm mb-1">{day}</div>
+                    <div className="font-bold text-sm mb-1 text-center">{day}</div>
                     {dayEvents.map((event, idx) => (
                         <div
                             key={idx}
@@ -94,12 +98,6 @@ const CustomCalendar: React.FC = () => {
                 ))}
                 {renderCalendarDays()}
             </div>
-            <button
-                className="fixed bottom-4 right-4 bg-blue-500 text-white rounded-full p-3 shadow-lg hover:bg-blue-600"
-                onClick={() => setIsModalOpen(true)}
-            >
-                <FaPlus />
-            </button>
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
