@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addUser, editUser, deleteUser } from '@/redux/store/slice';
+import { addUser, editUser, deleteUser } from '@/redux/store/userSlice';
 import { FaSearch, FaTrash, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import useDebounce from '@/hooks/useDebounce';
 import { RootState } from '@/redux/store';
@@ -11,7 +11,7 @@ import { User } from '@/app/types';
 
 const Table: React.FC = () => {
     const dispatch = useDispatch();
-    const users = useSelector((state: RootState) => state.data.users);
+    const users = useSelector((state: RootState) => state.users);
     const [userData, setUserData] = useState<User>({ id: 0, name: '' });
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);

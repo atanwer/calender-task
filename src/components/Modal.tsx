@@ -7,11 +7,22 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
     const [type, setType] = useState<EventType>('event');
     const [content, setContent] = useState('');
 
+    const reset = () => {
+        setType('event');
+        setContent("")
+    }
+
     const handleSave = () => {
         onSave(type, content);
         setContent('');
         onClose();
+        reset()
     };
+
+    const handleClose = () => {
+        onClose();
+        reset()
+    }
 
     if (!isOpen) return null;
 
@@ -35,7 +46,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
                     className="w-full p-2 mb-4 border rounded"
                 />
                 <div className="flex justify-end">
-                    <button onClick={onClose} className="mr-2 px-4 py-2 bg-gray-200 rounded">Cancel</button>
+                    <button onClick={handleClose} className="mr-2 px-4 py-2 bg-gray-200 rounded">Cancel</button>
                     <button onClick={handleSave} className="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
                 </div>
             </div>

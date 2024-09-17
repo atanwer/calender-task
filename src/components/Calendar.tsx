@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addEvent } from '@/redux/store/slice';
+import { addEvent } from '@/redux/store/eventSlice';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Modal from './Modal';
 import { CalendarEvent, EventType } from '@/app/types';
@@ -10,7 +10,7 @@ import { RootState } from '@/redux/store';
 
 const CustomCalendar: React.FC = () => {
     const dispatch = useDispatch();
-    const events: CalendarEvent = useSelector((state: RootState) => state.data.events);
+    const events: CalendarEvent = useSelector((state: RootState) => state.events);
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -51,7 +51,7 @@ const CustomCalendar: React.FC = () => {
             days.push(
                 <div
                     key={day}
-                    className={`h-24 border border-gray-200 p-1 overflow-y-auto cursor-pointer hover:bg-gray-100 ${isToday ? 'bg-gray-200' : ''}`}
+                    className={`h-24 border border-gray-200 p-1 overflow-y-auto cursor-pointer hover:bg-gray-100 ${isToday ? 'bg-purple-200' : ''}`}
                     onClick={() => handleDateClick(date)}
                 >
                     <div className="font-bold text-sm mb-1 text-center">{day}</div>

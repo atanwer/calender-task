@@ -21,7 +21,7 @@ export interface ModalProps {
 export interface NavItem {
   name: string;
   path: string;
-  icon: React.ElementType; // React.ElementType used for icon type
+  icon: React.ElementType;
 }
 
 // User and State Types
@@ -29,8 +29,3 @@ export interface User {
   id: number;
   name: string;
 }
-
-export type DataState = {
-  users: User[];
-  events: Record<string, Event[]>; // Use CalendarEvent type for event management
-};
