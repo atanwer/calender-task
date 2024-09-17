@@ -2,12 +2,12 @@ import React from 'react';
 import Sidebar from '../../components/Sidebar';
 import Table from '../../components/Table';
 
-const TablePage = () => {
+const TablePage: React.FC = () => {
     return (
         <div className="flex">
             <Sidebar />
-            <div className="flex-1 p-4">
-                <h1 className="text-xl font-bold">Table with CRUD</h1>
+            <div className="flex-1 p-8">
+                <h1 className="text-3xl font-bold mb-2">Users</h1>
                 <Table />
             </div>
         </div>

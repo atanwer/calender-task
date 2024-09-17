@@ -1,24 +1,36 @@
 "use client"
 
 import React, { useState } from 'react';
-import Calendar from 'react-calendar';
 import { useDispatch, useSelector } from 'react-redux';
 import { addEvent } from '@/redux/store/slice';
+import { FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa';
 import Modal from './Modal';
-import 'react-calendar/dist/Calendar.css';
 
-const CustomCalendar = () => {
+interface Event {
+    type: 'event' | 'reminder';
+    content: string;
+}
+
+interface CalendarEvent {
+    [date: string]: Event[];
+}
+
+const CustomCalendar: React.FC = () => {
     const dispatch = useDispatch();
-    const events = useSelector((state: any) => state.data.events);
+    const events: CalendarEvent = useSelector((state: any) => state.data.events);
+    const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
 
     const handleDateClick = (date: Date) => {
         setSelectedDate(date);
-        setIsModalOpen(true);  // Open modal on date click
+        setIsModalOpen(true);
     };
 
-    const handleSave = (type: string, content: string) => {
+    const handleSave = (type: 'event' | 'reminder', content: string) => {
         if (selectedDate) {
             const formattedDate = selectedDate.toISOString().split('T')[0];
             dispatch(addEvent({
@@ -26,36 +38,68 @@ const CustomCalendar = () => {
                 event: { type, content }
             }));
         }
+        setIsModalOpen(false);
     };
 
-    const getTileContent = (date: Date) => {
-        const formattedDate = date.toISOString().split('T')[0];
-        if (events[formattedDate]) {
-            return (
-                <ul>
-                    {events[formattedDate].map((event: any, idx: number) => (
-                        <li
+    const renderCalendarDays = () => {
+        const days = [];
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            days.push(<div key={`empty-${i}`} className="h-24 border border-gray-200"></div>);
+        }
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            const formattedDate = date.toISOString().split('T')[0];
+            const dayEvents = events[formattedDate] || [];
+
+            days.push(
+                <div
+                    key={day}
+                    className="h-24 border border-gray-200 p-1 overflow-y-auto cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleDateClick(date)}
+                >
+                    <div className="font-bold text-sm mb-1">{day}</div>
+                    {dayEvents.map((event, idx) => (
+                        <div
                             key={idx}
-                            className={`text-${event.type === 'event' ? 'green' : 'blue'}-500`}
+                            className={`text-xs p-1 mb-1 rounded ${event.type === 'event' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                                }`}
                         >
                             {event.content}
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             );
         }
-        return null;
+        return days;
     };
 
     return (
-        <div className="p-4">
-            <h2 className="text-xl font-bold mb-4">Calendar</h2>
-            <Calendar
-                onClickDay={handleDateClick}
-                tileContent={({ date }) => getTileContent(date)}
-            />
-
-            {/* Modal for adding event or reminder */}
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="flex justify-between items-center bg-gray-100 p-4">
+                <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}>
+                    <FaChevronLeft />
+                </button>
+                <h2 className="text-xl font-bold">
+                    {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                </h2>
+                <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}>
+                    <FaChevronRight />
+                </button>
+            </div>
+            <div className="grid grid-cols-7 gap-0">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="text-center font-bold py-2 border-b border-gray-200">
+                        {day}
+                    </div>
+                ))}
+                {renderCalendarDays()}
+            </div>
+            <button
+                className="fixed bottom-4 right-4 bg-blue-500 text-white rounded-full p-3 shadow-lg hover:bg-blue-600"
+                onClick={() => setIsModalOpen(true)}
+            >
+                <FaPlus />
+            </button>
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -66,63 +110,3 @@ const CustomCalendar = () => {
 };
 
 export default CustomCalendar;
-
-
-// import React, { useState } from 'react';
-// import Calendar from 'react-calendar';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { addEvent } from '@/redux/store/slice';
-// import 'react-calendar/dist/Calendar.css';
-
-// const CustomCalendar = () => {
-//     const dispatch = useDispatch();
-//     const events = useSelector((state: any) => state.data.events);
-//     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-//     const handleDateClick = (date: Date) => {
-//         setSelectedDate(date);
-//         const option = window.prompt('Enter "event" for Event or "reminder" for Reminder');
-
-//         if (option === 'event' || option === 'reminder') {
-//             const content = window.prompt('Enter the content:');
-//             if (content) {
-//                 const formattedDate = date.toISOString().split('T')[0];
-//                 dispatch(addEvent({
-//                     date: formattedDate,
-//                     event: { type: option, content }
-//                 }));
-//             }
-//         }
-//     };
-
-//     const getTileContent = (date: Date) => {
-//         const formattedDate = date.toISOString().split('T')[0];
-//         if (events[formattedDate]) {
-//             return (
-//                 <ul>
-//                     {events[formattedDate].map((event: any, idx: number) => (
-//                         <li
-//                             key={idx}
-//                             className={`text-${event.type === 'event' ? 'green' : 'blue'}-500`}
-//                         >
-//                             {event.content}
-//                         </li>
-//                     ))}
-//                 </ul>
-//             );
-//         }
-//         return null;
-//     };
-
-//     return (
-//         <div className="p-4">
-//             <h2 className="text-xl font-bold mb-4">Calendar</h2>
-//             <Calendar
-//                 onClickDay={handleDateClick}
-//                 tileContent={({ date }) => getTileContent(date)}
-//             />
-//         </div>
-//     );
-// };
-
-// export default CustomCalendar;
